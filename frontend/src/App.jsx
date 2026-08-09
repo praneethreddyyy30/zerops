@@ -1331,9 +1331,8 @@ Provide a concise, direct response in under 3 sentences. Emphasize how it affect
           <div className="chatbot-drawer animate-fade-in">
             <div className="chatbot-header">
               <h4>🤖 NutriAI Assistant</h4>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <button className="chatbot-close-btn" onClick={() => setChatOpen(false)}>✕</button>
-              </div>
+              <button className="chatbot-close-btn" onClick={() => setChatOpen(false)}>✕</button>
+            </div>
 
             <div className="chatbot-body">
               {chatMessages.map((msg, index) => (
