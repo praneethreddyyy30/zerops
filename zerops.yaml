@@ -22,7 +22,6 @@ zerops:
         - cd backend && npm install
       deployFiles:
         - backend
-        - package.json
       cache:
         - backend/node_modules
     run:
