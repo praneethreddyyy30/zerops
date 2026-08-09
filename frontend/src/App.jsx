@@ -28,7 +28,6 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [productData, setProductData] = useState(null);
   const [history, setHistory] = useState([]);
-  const [favorites, setFavorites] = useState([]);
 
   // Scanning states
   const [scanningMode, setScanningMode] = useState(null); // 'barcode' | 'ocr' | null
@@ -68,7 +67,6 @@ function App() {
   useEffect(() => {
     fetchProfile();
     fetchHistory();
-    fetchFavorites();
   }, []);
 
   // Scroll Reveal triggers (inspired by El Catrin scroll features)
@@ -91,7 +89,7 @@ function App() {
       window.removeEventListener('scroll', handleScroll);
       clearTimeout(timer);
     };
-  }, [productData, history, favorites, onboardingCompleted]);
+  }, [productData, history, onboardingCompleted]);
 
   // Scroll to bottom of chat when messages change
   useEffect(() => {
@@ -131,17 +129,7 @@ function App() {
     }
   };
 
-  const fetchFavorites = async () => {
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/favorites`);
-      if (res.ok) {
-        const data = await res.json();
-        setFavorites(data);
-      }
-    } catch (err) {
-      console.error('Error fetching favorites:', err);
-    }
-  };
+
 
   const saveProfileUpdate = async (updated) => {
     setProfile(updated);
@@ -317,27 +305,7 @@ function App() {
     }
   };
 
-  const handleToggleFavorite = async (product) => {
-    const isFav = favorites.some(f => f.product_code === product.code);
-    try {
-      if (isFav) {
-        await fetch(`${BACKEND_URL}/api/favorites/${product.code}`, { method: 'DELETE' });
-      } else {
-        await fetch(`${BACKEND_URL}/api/favorites`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            product_code: product.code,
-            product_name: product.product_name,
-            image_url: product.image_front_url
-          })
-        });
-      }
-      fetchFavorites();
-    } catch (err) {
-      console.error('Error toggling favorite:', err);
-    }
-  };
+
 
   const startBarcodeScanner = async () => {
     setScanningMode('barcode');
@@ -672,17 +640,6 @@ Provide a concise, direct response in under 3 sentences. Emphasize how it affect
   return (
     <div className="app-container">
       
-      {/* Floating Background Decorators (Minimal & Functional) */}
-      <svg className="bg-decorator-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M2 22C2 22 8 20 12 16C16 12 22 2 22 2C22 2 12 8 8 12C4 16 2 22 2 22Z" />
-        <path d="M12 16L17 21" />
-        <path d="M8 12L11 16" />
-      </svg>
-      <svg className="bg-decorator-barcode" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 5H5V19H3V5ZM7 5H8V19H7V5ZM10 5H13V19H10V5ZM15 5H16V19H15V5ZM18 5H21V19H18V5Z" />
-        <path d="M2 12H22" stroke="red" strokeDasharray="2 2" />
-      </svg>
-
       {/* EL CATRIN STYLE COMPLIANCE WELCOME OVERLAY WITH PHOTO HEADER */}
       {!onboardingCompleted && (
         <div className="age-gate-overlay animate-fade-in">
@@ -690,13 +647,6 @@ Provide a concise, direct response in under 3 sentences. Emphasize how it affect
             <h1 className="age-gate-title">NUTRIGUARD</h1>
             <div className="age-gate-subtitle">PERSONAL HEALTH SHIELD & INGREDIENT AUDITING</div>
             <div className="age-gate-line"></div>
-            
-            {/* Gourmet Header Photo for Popup welcome (no shield logo) */}
-            <img 
-              src="/popup_banner.jpg" 
-              alt="Gourmet Ingredients Backdrop" 
-              style={{ width: '100%', height: '180px', objectFit: 'cover', border: '2px solid var(--primary)', marginBottom: '24px' }} 
-            />
 
             <p className="age-gate-text">
               THIS WEBSITE RUNS CHEMICAL INGREDIENT MATCHING, NUTRI-SCORE EVALUATIONS, AND ALLERGEN TARGETS BASED ON YOUR ACTIVE HEALTH SHIELD PROFILE. 
@@ -728,9 +678,6 @@ Provide a concise, direct response in under 3 sentences. Emphasize how it affect
           </button>
           <button className="nav-link" onClick={() => scrollToSection('history-section')}>
             Scan History
-          </button>
-          <button className="nav-link" onClick={() => scrollToSection('favorites-section')}>
-            My Pantry
           </button>
           <button className="nav-link" onClick={() => setSidebarVisible(!sidebarVisible)}>
             <span>{sidebarVisible ? '👁️ Hide Profile' : '👁️ Show Profile'}</span>
@@ -1079,9 +1026,6 @@ Provide a concise, direct response in under 3 sentences. Emphasize how it affect
                       <span className={`badge-pill nutriscore-${productData.product.nutriscore_grade}`}>
                         Nutri-Score: {productData.product.nutriscore_grade?.toUpperCase()}
                       </span>
-                      <button className="btn btn-outline" style={{ padding: '6px 12px', fontSize: '0.8rem' }} onClick={() => handleToggleFavorite(productData.product)}>
-                        <span>{favorites.some(f => f.product_code === productData.product.code) ? '★ Bookmarked' : '☆ Bookmark'}</span>
-                      </button>
                     </div>
 
                     <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', marginTop: '12px', fontStyle: 'italic', maxWidth: '320px', lineHeight: '1.4' }}>
@@ -1305,31 +1249,6 @@ Provide a concise, direct response in under 3 sentences. Emphasize how it affect
             </div>
           </section>
 
-          {/* SECTION 5: MY PANTRY FAVORITES (Scroll Reveal) */}
-          <section id="favorites-section" className="console-card reveal">
-            <h2>My Pantry</h2>
-            <p className="desc">Your saved safe products for quick grocery store trips.</p>
-            <div className="favorites-grid">
-              {favorites.map(item => (
-                <div 
-                  key={item.product_code} 
-                  className="fav-card"
-                  onClick={() => { scrollToSection('console-section'); handleSelectProduct(item.product_code); }}
-                >
-                  {item.image_url ? (
-                    <img src={item.image_url} alt="" className="fav-thumb" />
-                  ) : (
-                    <div className="fav-placeholder">📦</div>
-                  )}
-                  <span className="name" style={{ fontSize: '1.15rem', fontWeight: '700', marginBottom: '4px' }}>{item.product_name}</span>
-                  <span className="code" style={{ fontSize: '0.95rem', color: 'var(--text-muted)' }}>Barcode: {item.product_code}</span>
-                </div>
-              ))}
-            </div>
-            {favorites.length === 0 && (
-              <p className="empty-text" style={{ textAlign: 'center', gridColumn: '1/-1', padding: '20px' }}>Pantry bookmarks are empty. Save safe items from their reports.</p>
-            )}
-          </section>
         </main>
       </div>
 
