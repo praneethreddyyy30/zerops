@@ -856,6 +856,44 @@ Provide a concise, direct response in under 3 sentences. Emphasize how it affect
               </form>
             </div>
 
+            {/* QUICK HACKATHON DEMO BUTTONS */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '12px', alignItems: 'center', background: '#f5f5f3', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: '2px solid var(--border-dark)', boxShadow: '2px 2px 0px var(--border-dark)' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-main)', fontFamily: 'var(--font-title)' }}>💡 Quick Testing Demos:</span>
+              <button 
+                type="button" 
+                className="badge-btn active goal" 
+                style={{ padding: '6px 12px', fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'var(--font-title)' }}
+                onClick={() => {
+                  setSearchQuery('030000010206');
+                  handleSelectProduct('030000010206');
+                }}
+              >
+                🌾 Quaker Oats (Safe)
+              </button>
+              <button 
+                type="button" 
+                className="badge-btn active allergy" 
+                style={{ padding: '6px 12px', fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'var(--font-title)' }}
+                onClick={() => {
+                  setSearchQuery('028400199148');
+                  handleSelectProduct('028400199148');
+                }}
+              >
+                🥔 Lay's Chips (High Sodium)
+              </button>
+              <button 
+                type="button" 
+                className="badge-btn active diet" 
+                style={{ padding: '6px 12px', fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'var(--font-title)' }}
+                onClick={() => {
+                  setSearchQuery('049000028904');
+                  handleSelectProduct('049000028904');
+                }}
+              >
+                🥤 Coca-Cola (High Sugar)
+              </button>
+            </div>
+
             {/* DYNAMIC SCANNERS & UPLOAD CONTROL BUTTONS */}
             <div className="action-row" style={{ gap: '10px' }}>
               <button className="quick-scan-btn" onClick={startBarcodeScanner}>

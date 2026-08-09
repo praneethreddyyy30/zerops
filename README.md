@@ -1,15 +1,15 @@
 # 🛡️ NutriGuard - Personal Food Guard & Assistant
 
-NutriGuard is a premium, real-time agentic food safety scanner and nutrition auditing dashboard. It helps users avoid dangerous allergens, match custom dietary baselines (Vegetarian, Vegan, Non-Veg), and achieve custom fitness goals (High Protein, Low Sugar, Low Sodium) by auditing ingredient lists instantly.
+## ⚠️ The Problem Statement
+Reading food product labels is a struggle. Ingredients lists are printed in microscopic fonts, filled with obscure chemical terms, and hide dangerous allergens behind unfamiliar names. For people managing chronic conditions (like diabetes or kidney disease), severe food allergies (like peanut or gluten), or specific lifestyle diets (like Vegetarian or Vegan), shopping for food is a high-risk guessing game. Standard Nutri-Scores only give a generic grade—they don't tell you if a product is safe for *your* specific body.
 
-The project is built on a clean, minimal design system inspired by the natural organic food brand **Supernatural** (warm paper off-white background, bold off-black ink borders, flat offset shadows, and vibrant sunflower-yellow highlights).
+## 🛡️ Our Proposed Solution
+**NutriGuard** is a personalized, real-time agentic food safety scanner and nutrition auditing platform. Instead of general food grades, it establishes a **personalized Health Shield** based on the user's allergies, diet baselines, and health goals. 
 
----
-
-## 🎨 Visual Preview & Aesthetics
-*   **Warm Paper Canvas:** Uses a soft warm off-white background (`#f9f9f7`) covered with a custom minimal background doodle design representing healthy food, calories, and scanning vectors.
-*   **Ink-Outlined Flat Cards:** Product details, history logs, and profile forms are styled as clean white card panels with **bold outlines (`3px solid #1e1e1e`)** and flat black drop shadows, recreating a hand-drawn cardboard feel.
-*   **Playful Handwriting Font Mix:** Headings use playpen font styles (`Playpen Sans`, `Gochi Hand`) combined with a clear modern sans-serif typography (`Outfit`) for text details to ensure perfect legibility.
+When a user scans a barcode or uploads a label photo:
+1. **OCR ingredient parsing** transcribes packaging lists instantly.
+2. The engine audits ingredients against the user's specific health profiles.
+3. **If even a single check doesn't align** (an allergen is triggered, diet baseline mismatches, or a health goal fails), the product is flagged as **UNSAFE** with a clear explanation of what violated their profile and a list of safe, healthy alternatives.
 
 ---
 
@@ -51,7 +51,7 @@ sequenceDiagram
     actor User
     participant App as React Frontend
     participant Server as Express Backend
-    participant OFF as Open Food Facts API
+    participant OpenFoodFacts as Open Food Facts API
 
     User->>App: Set Health Profile (Allergies, Goals, Diets)
     App->>Server: Update profile preferences in DB
@@ -59,8 +59,8 @@ sequenceDiagram
     Note over App: If photo is ingredients label, Tesseract OCR converts it to text
     App->>Server: Request Product Analysis (barcode or OCR text)
     alt is Barcode
-        Server->>OFF: Fetch product details from public database
-        OFF-->>Server: Return ingredients and nutrients
+        Server->>OpenFoodFacts: Fetch product details from public database
+        OpenFoodFacts-->>Server: Return ingredients and nutrients
     end
     Server->>Server: Audit ingredients against User Profile allergies & goals
     Server->>Server: Save analysis result to Scan History
