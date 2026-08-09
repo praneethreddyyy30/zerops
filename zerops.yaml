@@ -28,4 +28,5 @@ zerops:
       base: nodejs@20
       ports:
         - port: 4000
+          httpSupport: true
       start: node backend/server.js
