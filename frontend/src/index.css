@@ -1030,3 +1030,86 @@ h2, h3, h4 {
   font-family: var(--font-title);
   font-weight: 700;
 }
+
+/* ----------------------------------------------------
+   MOBILE & RESPONSIVE LAYOUT OVERRIDES (widths < 768px)
+   ---------------------------------------------------- */
+@media (max-width: 768px) {
+  .header-nav {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 0;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  
+  .logo-text {
+    font-size: 2.2rem;
+  }
+  
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .nav-link-btn {
+    font-size: 0.85rem;
+    padding: 6px 12px;
+  }
+
+  .app-container {
+    padding: 0 12px 40px 12px;
+  }
+
+  /* Stack sidebar and main console content */
+  .workspace-layout {
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+  }
+
+  /* Make panels full width and reduce shadows slightly on small screen */
+  .profile-card, .console-card, .product-info-card, .ingredients-grid-card {
+    padding: 16px !important;
+    box-shadow: 2px 2px 0px var(--border-dark) !important;
+  }
+
+  /* Stack main report panel columns */
+  .analysis-panel {
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+  }
+
+  /* Responsive scan control buttons */
+  .action-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+
+  .search-form {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 8px !important;
+  }
+
+  .search-btn, .quick-scan-btn {
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  /* Ensure video webcam containers fit screen width nicely */
+  .scanner-webcam-box, #barcode-scanner-view {
+    max-height: 240px;
+  }
+
+  /* Float assistant chatbot adjustments */
+  .chatbot-container {
+    width: calc(100% - 24px) !important;
+    right: 12px !important;
+    bottom: 12px !important;
+    max-height: 380px !important;
+  }
+}
+

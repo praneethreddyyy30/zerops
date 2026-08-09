@@ -327,9 +327,23 @@ function App() {
         },
         () => {}
       ).catch(err => {
-        setScanError('Camera permissions were denied or camera is in use.');
-        setScanningMode(null);
-        console.error(err);
+        // Fallback to front/default camera (critical for desktop testing)
+        html5Qrcode.start(
+          { facingMode: 'user' },
+          {
+            fps: 15,
+            qrbox: { width: 280, height: 120 }
+          },
+          (decodedText) => {
+            stopBarcodeScanner();
+            handleSelectProduct(decodedText);
+          },
+          () => {}
+        ).catch(err2 => {
+          setScanError('Camera permissions were denied, camera is in use, or HTTPS is required.');
+          setScanningMode(null);
+          console.error(err2);
+        });
       });
     }, 300);
   };
@@ -379,16 +393,22 @@ function App() {
     setProductData(null);
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' }
-      });
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' }
+        });
+      } catch (e) {
+        // Fallback to front camera or default camera (e.g. desktop webcam)
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      }
       webcamStreamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
     } catch (err) {
       console.error('Camera stream access failed:', err);
-      setScanError('Webcam access was denied. You can still upload a saved photo.');
+      setScanError('Webcam access was denied or secure HTTPS origin is required. You can still upload a saved photo.');
     }
   };
 
