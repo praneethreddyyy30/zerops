@@ -3,7 +3,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import * as Tesseract from 'tesseract.js';
 
-const BACKEND_URL = 'http://localhost:4000';
+const BACKEND_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:4000'
+  : `https://api-${window.location.hostname.replace('frontend-', '')}`;
 
 function App() {
   // Onboarding welcome state (reads from cache for production readiness)
