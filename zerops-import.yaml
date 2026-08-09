@@ -1,0 +1,21 @@
+# zerops-import.yaml
+# Use this configuration to import services into Zerops via the GUI or CLI.
+project:
+  name: nutriguard
+services:
+  # Static Web Hosting for React SPA Frontend
+  - hostname: frontend
+    type: static
+    enableSubdomainAccess: true
+
+  # Node.js API Backend
+  - hostname: api
+    type: nodejs@20
+    minContainers: 1
+    maxContainers: 3
+    enableSubdomainAccess: true
+
+  # PostgreSQL Managed Database
+  - hostname: db
+    type: postgresql:single@18
+    profile: oltp-staging

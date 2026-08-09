@@ -1,0 +1,30 @@
+# zerops.yaml
+# Manages the build and deploy pipeline for both frontend and backend on Zerops.
+zerops:
+  # 1. Frontend Static Service Setup
+  - setup: frontend
+    build:
+      base: nodejs@20
+      buildCommands:
+        - cd frontend && npm install && npm run build
+      deployFiles:
+        - frontend/dist/~
+      cache:
+        - frontend/node_modules
+    run:
+      base: static
+
+  # 2. Backend Node.js Service Setup
+  - setup: api
+    build:
+      base: nodejs@20
+      buildCommands:
+        - cd backend && npm install
+      deployFiles:
+        - backend
+        - package.json
+      cache:
+        - backend/node_modules
+    run:
+      base: nodejs@20
+      start: node backend/server.js
