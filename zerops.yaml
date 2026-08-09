@@ -27,5 +27,5 @@ zerops:
     run:
       base: nodejs@20
       ports:
-        - 4000
+        - port: 4000
       start: node backend/server.js
