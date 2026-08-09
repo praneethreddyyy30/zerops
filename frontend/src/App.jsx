@@ -46,13 +46,11 @@ function App() {
   // AI Chatbot States
   const [chatOpen, setChatOpen] = useState(false);
   const [chatInput, setChatInput] = useState('');
-  const [geminiApiKey, setGeminiApiKey] = useState(() => localStorage.getItem('nutriguard_gemini_key') || '');
-  const [showKeyInput, setShowKeyInput] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [chatMessages, setChatMessages] = useState([
     {
       sender: 'assistant',
-      text: "🤖 Hi! I am NutriAI, your personal health assistant. I can check safety, warning flags, and find alternatives offline! To get full conversational AI, click the gear ⚙️ icon above to add a Google Gemini API Key."
+      text: "🤖 Hi! I am NutriAI, your personal health assistant. I can check safety warnings and suggest alternatives offline. If your backend server has a Google Gemini API Key configured, I'll reply using advanced AI conversationally!"
     }
   ]);
 
@@ -491,21 +489,6 @@ function App() {
     }
   };
 
-  const handleSaveGeminiKey = (e) => {
-    e.preventDefault();
-    localStorage.setItem('nutriguard_gemini_key', geminiApiKey);
-    setShowKeyInput(false);
-    setChatMessages(prev => [
-      ...prev,
-      {
-        sender: 'assistant',
-        text: geminiApiKey.trim() 
-          ? "🔐 Gemini AI Key connected successfully! I will now use Google Gemini to answer your general food questions." 
-          : "🔐 API key cleared. Switched back to Local Smart Agent mode."
-      }
-    ]);
-  };
-
   const handleDismissOnboarding = () => {
     localStorage.setItem('nutriguard_onboarding_done', 'true');
     setOnboardingCompleted(true);
@@ -520,14 +503,87 @@ function App() {
     setChatInput('');
     setIsTyping(true);
 
-    try {
-      if (geminiApiKey.trim()) {
-        const productContext = productData 
-          ? `Current product scanned: "${productData.product.product_name}" by "${productData.product.brands}". Ingredients: "${productData.product.ingredients_text}". Safety status: "${productData.evaluation.safety_status}".`
-          : 'No product currently scanned.';
-        const profileContext = `User requirements: diet baseline: "${profile.diets?.join(', ') || 'None'}", allergens to avoid: "${profile.allergies?.join(', ') || 'None'}", goals to target: "${profile.goals?.join(', ') || 'None'}".`;
+    const runLocalAgent = () => {
+      let responseText = "I can only answer questions about the active product or your health profile. Try scanning a barcode or typing 'is this safe'!";
+      const cleanQuery = queryText.toLowerCase();
 
-        const prompt = `You are NutriAI, an agentic nutrition assistant built for NutriGuard. 
+      const hasProduct = !!productData;
+      const pName = hasProduct ? productData.product.product_name : '';
+      const safety = hasProduct ? productData.evaluation.safety_status : '';
+      const score = hasProduct ? productData.product.nutriscore_grade?.toUpperCase() : '';
+      
+      if (cleanQuery.includes('hello') || cleanQuery.includes('hi') || cleanQuery.includes('hey')) {
+        responseText = "Hello! Ask me about active scanned items, what ingredients to watch out for, or how custom goals are evaluated.";
+      } else if (cleanQuery.includes('safe') || cleanQuery.includes('okay') || cleanQuery.includes('compat') || cleanQuery.includes('fit') || cleanQuery.includes('suit')) {
+        if (hasProduct) {
+          if (safety === 'safe') {
+            responseText = `Yes! **${pName}** is fully safe and compatible with your health profile. It contains no warning triggers.`;
+          } else {
+            responseText = `No, **${pName}** is **NOT safe** for you. It triggered warning flags: **${productData.evaluation.triggered_warnings.map(w => w.trigger).join(', ')}**!`;
+          }
+        } else {
+          responseText = "You haven't scanned or searched a product yet. Type a barcode or scan an item in the console to evaluate safety!";
+        }
+      } else if (cleanQuery.includes('why') || cleanQuery.includes('warn') || cleanQuery.includes('unsa') || cleanQuery.includes('dang') || cleanQuery.includes('trigger')) {
+        if (hasProduct) {
+          if (productData.evaluation.triggered_warnings.length > 0) {
+            responseText = `**${pName}** triggered warnings for: ${productData.evaluation.triggered_warnings.map(w => `"${w.trigger}" (${w.message})`).join('. ')}`;
+          } else {
+            responseText = `**${pName}** is marked safe. It has no trigger matches for your profile.`;
+          }
+        } else {
+          responseText = "No active product. Scan an item first to audit its safety triggers!";
+        }
+      } else if (cleanQuery.includes('altern') || cleanQuery.includes('replac') || cleanQuery.includes('instead') || cleanQuery.includes('swap') || cleanQuery.includes('other option')) {
+        if (hasProduct) {
+          if (safety === 'danger' && productData.alternatives.length > 0) {
+            responseText = `Based on your profile, I recommend swapping ${pName} for these safe alternatives: **${productData.alternatives.map(a => a.product_name).join(', ')}**.`;
+          } else {
+            responseText = `For ${pName}, no warnings were triggered. It is already safe to consume!`;
+          }
+        } else {
+          responseText = "Please load a product first to search for compatible alternatives.";
+        }
+      } else if (cleanQuery.includes('grade') || cleanQuery.includes('nutriscore') || cleanQuery.includes('nutri-score')) {
+        if (hasProduct) {
+          responseText = `**${pName}** has a Nutri-Score of **${score}**. ${score === 'A' || score === 'B' ? 'This represents good nutritional quality.' : score === 'C' ? 'This is a moderate score.' : 'This represents poor nutritional quality (high in fats, sugars, or salt).'}`;
+        } else {
+          responseText = "Nutri-Score measures nutritional density from A (healthy) to E (poor). Scan a product to view its grade!";
+        }
+      } else if (cleanQuery.includes('sod') || cleanQuery.includes('salt') || cleanQuery.includes('blood pressure')) {
+        if (hasProduct) {
+          const sod = productData.product.nutriments?.sodium_100g || 0;
+          responseText = `**${pName}** contains **${Math.round(sod * 1000)}mg** of sodium per 100g. Standard FDA recommends keeping daily sodium below 2,300mg.`;
+        } else {
+          responseText = "Toggling 'Low Sodium' under goals will alert you if any scanned food has more than 400mg of sodium per 100g.";
+        }
+      } else if (cleanQuery.includes('sugar') || cleanQuery.includes('diab') || cleanQuery.includes('sweet')) {
+        if (hasProduct) {
+          const sug = productData.product.nutriments?.sugars_100g || 0;
+          responseText = `**${pName}** contains **${sug.toFixed(1)}g** of sugar per 100g. Recommended limit is under 50g daily.`;
+        } else {
+          responseText = "Diabetic Safe checks block products containing more than 15g of simple sugars per 100g.";
+        }
+      } else if (cleanQuery.includes('prot') || cleanQuery.includes('gym') || cleanQuery.includes('muscle')) {
+        if (hasProduct) {
+          const prot = productData.product.nutriments?.proteins_100g || 0;
+          responseText = `**${pName}** has **${prot.toFixed(1)}g** of protein per 100g, contributing ${Math.round((prot / 50) * 100)}% to your daily target.`;
+        } else {
+          responseText = "Gym/High Protein filters target items with 10g or more of protein per 100g.";
+        }
+      }
+
+      setChatMessages(prev => [...prev, { sender: 'assistant', text: responseText }]);
+      setIsTyping(false);
+    };
+
+    try {
+      const productContext = productData 
+        ? `Current product scanned: "${productData.product.product_name}" by "${productData.product.brands}". Ingredients: "${productData.product.ingredients_text}". Safety status: "${productData.evaluation.safety_status}".`
+        : 'No product currently scanned.';
+      const profileContext = `User requirements: diet baseline: "${profile.diets?.join(', ') || 'None'}", allergens to avoid: "${profile.allergies?.join(', ') || 'None'}", goals to target: "${profile.goals?.join(', ') || 'None'}".`;
+
+      const prompt = `You are NutriAI, an agentic nutrition assistant built for NutriGuard. 
 Context:
 ${productContext}
 ${profileContext}
@@ -536,104 +592,22 @@ Question: "${queryText}"
 
 Provide a concise, direct response in under 3 sentences. Emphasize how it affects their selected health profile.`;
 
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }]
-          })
-        });
+      const res = await fetch(`${BACKEND_URL}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
 
-        if (res.ok) {
-          const data = await res.json();
-          const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "I couldn't process that response.";
-          setChatMessages(prev => [...prev, { sender: 'assistant', text }]);
-        } else {
-          setChatMessages(prev => [...prev, { sender: 'assistant', text: "⚠️ Error communicating with Gemini API. Please make sure your API key is correct, or clear it in the chat settings to use Local Agent mode." }]);
-        }
+      if (res.ok) {
+        const data = await res.json();
+        setChatMessages(prev => [...prev, { sender: 'assistant', text: data.text }]);
+        setIsTyping(false);
       } else {
-        setTimeout(() => {
-          let responseText = "I can only answer questions about the active product or your health profile. Try scanning a barcode or typing 'is this safe'!";
-          const cleanQuery = queryText.toLowerCase();
-
-          const hasProduct = !!productData;
-          const pName = hasProduct ? productData.product.product_name : '';
-          const score = hasProduct ? productData.product.nutriscore_grade?.toUpperCase() : '';
-          const safety = hasProduct ? productData.evaluation.safety_status : '';
-          
-          if (cleanQuery.includes('hello') || cleanQuery.includes('hi') || cleanQuery.includes('hey')) {
-            responseText = "Hello! Ask me about active scanned items, what ingredients to watch out for, or how custom goals are evaluated.";
-          } else if (cleanQuery.includes('api key') || cleanQuery.includes('key')) {
-            responseText = "You can add your Gemini API Key by clicking the gear ⚙️ icon at the top right of this chat box. Once saved, I will use Google Gemini to reply!";
-          } else if (cleanQuery.includes('safe') || cleanQuery.includes('okay') || cleanQuery.includes('okay') || cleanQuery.includes('compat') || cleanQuery.includes('fit') || cleanQuery.includes('suit')) {
-            if (hasProduct) {
-              if (safety === 'safe') {
-                responseText = `Yes! **${pName}** is fully safe and compatible with your health profile. It contains no warning triggers.`;
-              } else if (safety === 'warning') {
-                responseText = `**${pName}** is generally acceptable, but has ingredients to watch out for. Check the warnings list on the right column of your dashboard.`;
-              } else {
-                responseText = `No, **${pName}** is **NOT safe** for you. It triggered warning flags: **${productData.evaluation.triggered_warnings.map(w => w.trigger).join(', ')}**!`;
-              }
-            } else {
-              responseText = "You haven't scanned or searched a product yet. Type a barcode or scan an item in the console to evaluate safety!";
-            }
-          } else if (cleanQuery.includes('why') || cleanQuery.includes('warn') || cleanQuery.includes('unsa') || cleanQuery.includes('dang') || cleanQuery.includes('trigger')) {
-            if (hasProduct) {
-              if (productData.evaluation.triggered_warnings.length > 0) {
-                responseText = `**${pName}** triggered warnings for: ${productData.evaluation.triggered_warnings.map(w => `"${w.trigger}" (${w.message})`).join('. ')}`;
-              } else {
-                responseText = `**${pName}** is marked safe. It has no trigger matches for your profile.`;
-              }
-            } else {
-              responseText = "No active product. Scan an item first to audit its safety triggers!";
-            }
-          } else if (cleanQuery.includes('altern') || cleanQuery.includes('replac') || cleanQuery.includes('instead') || cleanQuery.includes('swap') || cleanQuery.includes('other option')) {
-            if (hasProduct) {
-              if (safety === 'danger' && productData.alternatives.length > 0) {
-                responseText = `Based on your profile, I recommend swapping ${pName} for these safe alternatives: **${productData.alternatives.map(a => a.product_name).join(', ')}**.`;
-              } else {
-                responseText = `For ${pName}, no warnings were triggered. It is already safe to consume!`;
-              }
-            } else {
-              responseText = "Please load a product first to search for compatible alternatives.";
-            }
-          } else if (cleanQuery.includes('grade') || cleanQuery.includes('nutriscore') || cleanQuery.includes('nutri-score')) {
-            if (hasProduct) {
-              responseText = `**${pName}** has a Nutri-Score of **${score}**. ${score === 'A' || score === 'B' ? 'This represents good nutritional quality.' : score === 'C' ? 'This is a moderate score.' : 'This represents poor nutritional quality (high in fats, sugars, or salt).'}`;
-            } else {
-              responseText = "Nutri-Score measures nutritional density from A (healthy) to E (poor). Scan a product to view its grade!";
-            }
-          } else if (cleanQuery.includes('sod') || cleanQuery.includes('salt') || cleanQuery.includes('blood pressure')) {
-            if (hasProduct) {
-              const sod = productData.product.nutriments?.sodium_100g || 0;
-              responseText = `**${pName}** contains **${Math.round(sod * 1000)}mg** of sodium per 100g. Standard FDA recommends keeping daily sodium below 2,300mg.`;
-            } else {
-              responseText = "Toggling 'Low Sodium' under goals will alert you if any scanned food has more than 400mg of sodium per 100g.";
-            }
-          } else if (cleanQuery.includes('sugar') || cleanQuery.includes('diab') || cleanQuery.includes('sweet')) {
-            if (hasProduct) {
-              const sug = productData.product.nutriments?.sugars_100g || 0;
-              responseText = `**${pName}** contains **${sug.toFixed(1)}g** of sugar per 100g. Recommended limit is under 50g daily.`;
-            } else {
-              responseText = "Diabetic Safe checks block products containing more than 15g of simple sugars per 100g.";
-            }
-          } else if (cleanQuery.includes('prot') || cleanQuery.includes('gym') || cleanQuery.includes('muscle')) {
-            if (hasProduct) {
-              const prot = productData.product.nutriments?.proteins_100g || 0;
-              responseText = `**${pName}** has **${prot.toFixed(1)}g** of protein per 100g, contributing ${Math.round((prot / 50) * 100)}% to your daily target.`;
-            } else {
-              responseText = "Gym/High Protein filters target items with 10g or more of protein per 100g.";
-            }
-          }
-
-          setChatMessages(prev => [...prev, { sender: 'assistant', text: responseText }]);
-        }, 800);
+        runLocalAgent();
       }
     } catch (err) {
       console.error(err);
-      setChatMessages(prev => [...prev, { sender: 'assistant', text: "Something went wrong. Please check your connection." }]);
-    } finally {
-      setIsTyping(false);
+      runLocalAgent();
     }
   };
 
@@ -1332,38 +1306,8 @@ Provide a concise, direct response in under 3 sentences. Emphasize how it affect
             <div className="chatbot-header">
               <h4>🤖 NutriAI Assistant</h4>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <button 
-                  className="chatbot-close-btn" 
-                  onClick={() => setShowKeyInput(!showKeyInput)} 
-                  title="Toggle Gemini API Key Setup"
-                  style={{ fontSize: '0.95rem' }}
-                >
-                  ⚙️
-                </button>
                 <button className="chatbot-close-btn" onClick={() => setChatOpen(false)}>✕</button>
               </div>
-            </div>
-
-            {/* Gemini API Key Configuration Overlay */}
-            {showKeyInput && (
-              <form onSubmit={handleSaveGeminiKey} style={{ padding: '16px', background: 'rgba(0,0,0,0.03)', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '600' }}>Enter Gemini API Key (Stored locally in browser):</label>
-                <div style={{ display: 'flex', gap: '6px' }}>
-                  <input 
-                    type="password" 
-                    placeholder="g-xxxx..." 
-                    className="input-field" 
-                    style={{ padding: '6px 12px', fontSize: '0.8rem' }}
-                    value={geminiApiKey}
-                    onChange={(e) => setGeminiApiKey(e.target.value)}
-                  />
-                  <button type="submit" className="btn btn-primary" style={{ padding: '6px 12px', fontSize: '0.8rem' }}>
-                    <span>Save</span>
-                  </button>
-                </div>
-                <p style={{ fontSize: '0.65rem', color: 'var(--text-dim)' }}>Leave blank to use the offline Smart Agent.</p>
-              </form>
-            )}
 
             <div className="chatbot-body">
               {chatMessages.map((msg, index) => (
@@ -1382,7 +1326,7 @@ Provide a concise, direct response in under 3 sentences. Emphasize how it affect
             <div className="chatbot-input-row">
               <input
                 type="text"
-                placeholder={geminiApiKey.trim() ? "Ask Gemini anything..." : "Ask is this safe?, why?, or suggestions..."}
+                placeholder="Ask NutriAI anything..."
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleSendChatMessage(); }}

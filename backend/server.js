@@ -238,6 +238,41 @@ app.delete('/api/favorites/:code', async (req, res) => {
   }
 });
 
+/**
+ * AI Chat Assistant Proxy Endpoint
+ */
+app.post('/api/chat', async (req, res) => {
+  const { prompt } = req.body;
+  const apiKey = process.env.GEMINI_API_KEY;
+
+  if (!apiKey) {
+    return res.status(400).json({ error: 'Gemini API Key is not configured on the backend server.' });
+  }
+
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }]
+      })
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('Gemini API call failed:', errText);
+      return res.status(502).json({ error: 'Failed to communicate with Gemini API.' });
+    }
+
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "I couldn't process that response.";
+    res.json({ text });
+  } catch (error) {
+    console.error('Error in chat proxy:', error);
+    res.status(500).json({ error: 'Internal server error in chat proxy.' });
+  }
+});
+
 // Start Server
 app.listen(PORT, () => {
   console.log(`NutriGuard Backend server listening on port ${PORT}`);
