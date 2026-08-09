@@ -910,6 +910,9 @@ h2, h3, h4 {
   box-shadow: 4px 4px 0px var(--border-dark);
   transition: var(--transition-smooth);
   border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .chatbot-trigger-btn:hover {
@@ -1173,6 +1176,32 @@ h2, h3, h4 {
     right: 12px !important;
     bottom: 12px !important;
     max-height: 380px !important;
+  }
+
+  /* Make chatbot button a small, round floating circular action button (FAB) on mobile */
+  .ai-chatbot-widget {
+    bottom: 16px !important;
+    right: 16px !important;
+  }
+
+  .chatbot-trigger-btn {
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    box-shadow: 3px 3px 0px var(--border-dark) !important;
+  }
+
+  .chatbot-trigger-emoji {
+    font-size: 1.6rem !important;
+    margin: 0 !important;
+  }
+
+  .chatbot-trigger-text {
+    display: none !important;
   }
 
   /* Show console card first and profile card last on mobile for returning users */

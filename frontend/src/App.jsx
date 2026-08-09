@@ -1373,7 +1373,8 @@ Provide a concise, direct response in under 3 sentences. Emphasize how it affect
           </div>
         ) : (
           <button className="chatbot-trigger-btn" onClick={() => setChatOpen(true)}>
-            <span>🤖 NutriAI Assistant</span>
+            <span className="chatbot-trigger-emoji">🤖</span>
+            <span className="chatbot-trigger-text">NutriAI Assistant</span>
           </button>
         )}
       </div>
