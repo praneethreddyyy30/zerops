@@ -26,4 +26,6 @@ zerops:
         - backend/node_modules
     run:
       base: nodejs@20
+      ports:
+        - 4000
       start: node backend/server.js
