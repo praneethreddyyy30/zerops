@@ -261,6 +261,19 @@ function analyzeProduct(product, profile) {
     }
   });
 
+  // 5. Unsafe check: If any health goal is NOT met, trigger warning and force danger status!
+  met_goals.forEach(g => {
+    if (!g.meets) {
+      triggered_warnings.push({
+        type: g.goal,
+        category: 'goals',
+        trigger: g.value,
+        message: `Goal Unmet: ${g.message}`
+      });
+      safety_status = 'danger';
+    }
+  });
+
   // 4. Map Individual Ingredients for UI Highlighting
   const parsed_ingredients = tokenizeIngredients(ingredients_text).map(ing => {
     let ingStatus = 'safe';

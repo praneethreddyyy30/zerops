@@ -1021,9 +1021,32 @@ Provide a concise, direct response in under 3 sentences. Emphasize how it affect
                     )}
                     <h2>{productData.product.product_name}</h2>
                     <p className="product-brand">{productData.product.brands}</p>
-                    
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '60px',
+                      height: '60px',
+                      borderRadius: '50%',
+                      border: '3px solid var(--border-dark)',
+                      background: 
+                        productData.product.nutriscore_grade?.toLowerCase() === 'a' ? 'var(--safe)' :
+                        productData.product.nutriscore_grade?.toLowerCase() === 'b' ? '#86efac' : // Soft green
+                        productData.product.nutriscore_grade?.toLowerCase() === 'c' ? 'var(--primary)' : // Yellow
+                        productData.product.nutriscore_grade?.toLowerCase() === 'd' ? 'var(--warning)' : // Orange
+                        productData.product.nutriscore_grade?.toLowerCase() === 'e' ? 'var(--danger)' : '#e5e7eb',
+                      color: '#1e1e1e',
+                      fontSize: '2rem',
+                      fontWeight: '900',
+                      fontFamily: 'var(--font-title)',
+                      boxShadow: '3px 3px 0px var(--border-dark)',
+                      margin: '16px auto'
+                    }} title={`Nutri-Score Grade: ${productData.product.nutriscore_grade?.toUpperCase()}`}>
+                      {productData.product.nutriscore_grade?.toUpperCase() || '?'}
+                    </div>
+
                     <div className="product-meta">
-                      <span className={`badge-pill nutriscore-${productData.product.nutriscore_grade}`}>
+                      <span className={`badge-pill nutriscore-${productData.product.nutriscore_grade}`} style={{ border: '2px solid var(--border-dark)', boxShadow: '2px 2px 0px var(--border-dark)', fontWeight: 'bold' }}>
                         Nutri-Score: {productData.product.nutriscore_grade?.toUpperCase()}
                       </span>
                     </div>
