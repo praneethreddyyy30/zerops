@@ -583,12 +583,16 @@ function App() {
         : 'No product currently scanned.';
       const profileContext = `User requirements: diet baseline: "${profile.diets?.join(', ') || 'None'}", allergens to avoid: "${profile.allergies?.join(', ') || 'None'}", goals to target: "${profile.goals?.join(', ') || 'None'}".`;
 
-      const prompt = `You are NutriAI, an agentic nutrition assistant built for NutriGuard. 
+      const prompt = `You are NutriAI, an agentic nutrition and food safety assistant built for NutriGuard. 
 Context:
 ${productContext}
 ${profileContext}
 
 Question: "${queryText}"
+
+CRITICAL TOPIC POLICY:
+- You must ONLY answer questions that are related to food, ingredients, nutrition, health profiles, allergies, recipes, dietary baselines, or general food safety.
+- If the question is NOT related to these topics (such as general knowledge, history, geography, programming, politics, sports, etc.), you MUST decline to answer and reply EXACTLY with: "I can only assist with food safety, ingredients, nutrition, and health-related questions."
 
 Provide a concise, direct response in under 3 sentences. Emphasize how it affects their selected health profile.`;
 
