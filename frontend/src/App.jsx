@@ -860,7 +860,7 @@ Provide a concise, direct response in under 3 sentences. Emphasize how it affect
             </div>
 
             {/* QUICK HACKATHON DEMO BUTTONS */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '12px', alignItems: 'center', background: '#f5f5f3', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: '2px solid var(--border-dark)', boxShadow: '2px 2px 0px var(--border-dark)' }}>
+            <div className="demo-badges-row">
               <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-main)', fontFamily: 'var(--font-title)' }}>💡 Quick Testing Demos:</span>
               <button 
                 type="button" 

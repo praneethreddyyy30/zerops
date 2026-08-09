@@ -502,6 +502,19 @@ h2, h3, h4 {
   gap: 32px;
 }
 
+.demo-badges-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  align-items: center;
+  background: #f5f5f3;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-dark);
+  box-shadow: 2px 2px 0px var(--border-dark);
+}
+
 .console-card {
   padding: 36px;
   background: var(--bg-card);
@@ -1075,17 +1088,68 @@ h2, h3, h4 {
     box-shadow: 2px 2px 0px var(--border-dark) !important;
   }
 
+  /* Allergies container - 3 columns grid on mobile */
+  .profile-group:nth-of-type(2) .badges-container {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+  .profile-group:nth-of-type(2) .badge-btn {
+    padding: 6px 4px !important;
+    font-size: 0.75rem !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  /* Goals container - 2 columns grid on mobile */
+  .profile-group:nth-of-type(3) .badges-container {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+  .profile-group:nth-of-type(3) .badge-btn {
+    padding: 6px 8px !important;
+    font-size: 0.75rem !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
   /* Stack main report panel columns */
   .analysis-panel {
     grid-template-columns: 1fr !important;
     gap: 20px;
   }
 
-  /* Responsive scan control buttons */
+  /* 2x2 Grid for Scanner buttons on mobile */
   .action-row {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 10px !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .quick-scan-btn {
+    width: 100% !important;
+    font-size: 0.78rem !important;
+    padding: 10px 4px !important;
+    text-align: center !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  /* Stack Quick Testing Demos vertically on mobile */
+  .demo-badges-row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 6px !important;
+    padding: 10px !important;
+  }
+  .demo-badges-row span {
+    text-align: center !important;
+    margin-bottom: 4px !important;
   }
 
   .search-form {
@@ -1094,9 +1158,8 @@ h2, h3, h4 {
     gap: 8px !important;
   }
 
-  .search-btn, .quick-scan-btn {
+  .search-btn {
     width: 100% !important;
-    text-align: center !important;
   }
 
   /* Ensure video webcam containers fit screen width nicely */
