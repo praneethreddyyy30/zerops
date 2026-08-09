@@ -1028,13 +1028,25 @@ Provide a concise, direct response in under 3 sentences. Emphasize how it affect
                       </span>
                     </div>
 
-                    <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', marginTop: '12px', fontStyle: 'italic', maxWidth: '320px', lineHeight: '1.4' }}>
-                      {productData.product.nutriscore_grade?.toLowerCase() === 'a' && '🏆 Grade A: Excellent nutritional quality. Highly recommended for daily balanced diet.'}
-                      {productData.product.nutriscore_grade?.toLowerCase() === 'b' && '✨ Grade B: Good nutritional quality. A solid healthy choice.'}
-                      {productData.product.nutriscore_grade?.toLowerCase() === 'c' && '⚖️ Grade C: Moderate nutritional quality. Consumable but check ingredients.'}
-                      {productData.product.nutriscore_grade?.toLowerCase() === 'd' && '⚠️ Grade D: Poor nutritional quality. Eat in moderation.'}
-                      {productData.product.nutriscore_grade?.toLowerCase() === 'e' && '🚨 Grade E: Very poor nutritional value. High in saturated fats, sugar, or sodium.'}
-                      {(!productData.product.nutriscore_grade || ['unknown', 'none'].includes(productData.product.nutriscore_grade?.toLowerCase())) && '❓ Nutri-Score rating unavailable for this product.'}
+                    <p style={{ fontSize: '0.95rem', color: 'var(--text-main)', marginTop: '12px', fontStyle: 'italic', maxWidth: '320px', lineHeight: '1.4' }}>
+                      {productData.evaluation.safety_status === 'danger' ? (
+                        <span style={{ color: 'var(--danger)', fontWeight: 'bold' }}>
+                          🚨 UNSAFE PRODUCT: Even though this item has a high Nutri-Score, it contains active allergen triggers or violates your dietary baseline. AVOID CONSUMPTION.
+                        </span>
+                      ) : productData.evaluation.safety_status === 'warning' ? (
+                        <span style={{ color: 'var(--warning)', fontWeight: 'bold' }}>
+                          ⚠️ AUDIT REQUIRED: This product matches your baseline profile, but conflicts with your active health goals (e.g. excess sodium or sugar).
+                        </span>
+                      ) : (
+                        <>
+                          {productData.product.nutriscore_grade?.toLowerCase() === 'a' && '🏆 Grade A: Excellent nutritional quality. Highly recommended for daily balanced diet.'}
+                          {productData.product.nutriscore_grade?.toLowerCase() === 'b' && '✨ Grade B: Good nutritional quality. A solid healthy choice.'}
+                          {productData.product.nutriscore_grade?.toLowerCase() === 'c' && '⚖️ Grade C: Moderate nutritional quality. Consumable but check ingredients.'}
+                          {productData.product.nutriscore_grade?.toLowerCase() === 'd' && '⚠️ Grade D: Poor nutritional quality. Eat in moderation.'}
+                          {productData.product.nutriscore_grade?.toLowerCase() === 'e' && '🚨 Grade E: Very poor nutritional value. High in saturated fats, sugar, or sodium.'}
+                          {(!productData.product.nutriscore_grade || ['unknown', 'none'].includes(productData.product.nutriscore_grade?.toLowerCase())) && '❓ Nutri-Score rating unavailable for this product.'}
+                        </>
+                      )}
                     </p>
                   </div>
 
