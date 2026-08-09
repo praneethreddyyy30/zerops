@@ -2,14 +2,14 @@
 
 NutriGuard is a premium, real-time agentic food safety scanner and nutrition auditing dashboard. It helps users avoid dangerous allergens, match custom dietary baselines (Vegetarian, Vegan, Non-Veg), and achieve custom fitness goals (High Protein, Low Sugar, Low Sodium) by auditing ingredient lists instantly.
 
-The project is built on a high-contrast, modern color-blocked design system inspired by premium juice and health brand aesthetics (CitrusSun deep forest green & lime-yellow styling).
+The project is built on a clean, minimal design system inspired by the natural organic food brand **Supernatural** (warm paper off-white background, bold off-black ink borders, flat offset shadows, and vibrant sunflower-yellow highlights).
 
 ---
 
 ## 🎨 Visual Preview & Aesthetics
-*   **High-Contrast Color Blocking:** Uses a deep forest green base (#071311) paired with vibrant lime-yellow accents (#c8ee44) to guarantee perfect readability.
-*   **Cardless & Sleek Panels:** Content flows inside clean, glassmorphic forest-green panels with solid borders, eliminating bulky boxes and messy backgrounds.
-*   **Responsive Typography:** Powered by clean modern sans-serif typography (`Outfit` for logo/headers and `Plus Jakarta Sans` for body text).
+*   **Warm Paper Canvas:** Uses a soft warm off-white background (`#f9f9f7`) covered with a custom minimal background doodle design representing healthy food, calories, and scanning vectors.
+*   **Ink-Outlined Flat Cards:** Product details, history logs, and profile forms are styled as clean white card panels with **bold outlines (`3px solid #1e1e1e`)** and flat black drop shadows, recreating a hand-drawn cardboard feel.
+*   **Playful Handwriting Font Mix:** Headings use playpen font styles (`Playpen Sans`, `Gochi Hand`) combined with a clear modern sans-serif typography (`Outfit`) for text details to ensure perfect legibility.
 
 ---
 
