@@ -1031,3 +1031,28 @@ h2, h3, h4 {
   background: transparent;
   color: var(--danger);
 }
+
+/* Floating Background Decorators (Minimal & Functional) */
+.bg-decorator-leaf {
+  position: fixed;
+  top: 15%;
+  right: 5%;
+  width: 140px;
+  height: 140px;
+  color: var(--primary);
+  opacity: 0.12; /* Subtle outline */
+  pointer-events: none;
+  z-index: -1;
+}
+
+.bg-decorator-barcode {
+  position: fixed;
+  bottom: 12%;
+  left: 4%;
+  width: 160px;
+  height: 120px;
+  color: var(--text-muted);
+  opacity: 0.1; /* Subtle outline */
+  pointer-events: none;
+  z-index: -1;
+}

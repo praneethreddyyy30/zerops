@@ -672,6 +672,17 @@ Provide a concise, direct response in under 3 sentences. Emphasize how it affect
   return (
     <div className="app-container">
       
+      {/* Floating Background Decorators (Minimal & Functional) */}
+      <svg className="bg-decorator-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 22C2 22 8 20 12 16C16 12 22 2 22 2C22 2 12 8 8 12C4 16 2 22 2 22Z" />
+        <path d="M12 16L17 21" />
+        <path d="M8 12L11 16" />
+      </svg>
+      <svg className="bg-decorator-barcode" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 5H5V19H3V5ZM7 5H8V19H7V5ZM10 5H13V19H10V5ZM15 5H16V19H15V5ZM18 5H21V19H18V5Z" />
+        <path d="M2 12H22" stroke="red" strokeDasharray="2 2" />
+      </svg>
+
       {/* EL CATRIN STYLE COMPLIANCE WELCOME OVERLAY WITH PHOTO HEADER */}
       {!onboardingCompleted && (
         <div className="age-gate-overlay animate-fade-in">
