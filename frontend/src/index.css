@@ -1174,5 +1174,17 @@ h2, h3, h4 {
     bottom: 12px !important;
     max-height: 380px !important;
   }
+
+  /* Show console card first and profile card last on mobile for returning users */
+  .workspace-layout.show-console-first {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .workspace-layout.show-console-first .main-console {
+    order: 1 !important;
+  }
+  .workspace-layout.show-console-first .sidebar-profile {
+    order: 2 !important;
+  }
 }
 

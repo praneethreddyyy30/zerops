@@ -692,7 +692,7 @@ Provide a concise, direct response in under 3 sentences. Emphasize how it affect
       </header>
 
       {/* CORE WORKSPACE LAYOUT */}
-      <div className={`workspace-layout ${!sidebarVisible ? 'sidebar-hidden' : ''}`}>
+      <div className={`workspace-layout ${!sidebarVisible ? 'sidebar-hidden' : ''} ${onboardingCompleted ? 'show-console-first' : ''}`}>
         
         {/* LEFT COLUMN: THE HEALTH SHIELD SIDEBAR (Hideable) */}
         {sidebarVisible && (
