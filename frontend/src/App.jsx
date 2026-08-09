@@ -5,7 +5,10 @@ import * as Tesseract from 'tesseract.js';
 
 const BACKEND_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:4000'
-  : `https://api-${window.location.hostname.replace('frontend-', '')}`;
+  : (() => {
+      const parts = window.location.hostname.replace('frontend-', '').split('.');
+      return `https://api-${parts[0]}-4000.${parts.slice(1).join('.')}`;
+    })();
 
 function App() {
   // Onboarding welcome state (reads from cache for production readiness)
